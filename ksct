@@ -25,26 +25,39 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-locale=$(localectl | grep -oP '(?<=LANG\=).+')
-if [[ ${locale} == "ja_JP.UTF-8" ]]; then
-	text="画面の色温度を選んで下さい。"
+if [[ ${LANG} == "ja_JP.UTF-8" ]]; then
+	text1="画面の色温度を選んで下さい。"
+	text2="画面の明るさを選んで下さい。"
 	column1="温度"
 	column2="レベル"
+	column3="明るさ"
 	msg_warmest="アチアチ"
 	msg_coldest="ヒエヒエ"
 	msg_def="標準"
-else
-	text="Select the screen colour temperature."
+	msg_brightest="明るい"
+	msg_darkest="暗い"
+elif [[ ${LANG} != "ja_JP.UTF-8" ]]; then
+	text1="Select the screen colour temperature."
+	text2="Select the screen brightness."
 	column1="Temp."
 	column2="Level"
+	column3="Brt."
 	msg_warmest="warmest"
 	msg_coldest="coldest"
 	msg_def="default"
+	msg_brightest="brightest"
+	msg_darkest="darkest"
 fi
 
-tmpr=$(zenity --list --title="KSCT" \
-	      --text="${text}" \
-	      --column="${column1}" --column="${column2}" \
+temp=$(zenity --list --title="KSCT" \
+	      --text="${text1}" \
+	      --column="${column1}" --column="${column2}" --hide-column=1 \
 	      700 "0 - ${msg_warmest}" 1400 1 2100 2 2800 3 3500 4 4200 "5 - ${msg_def}" 4900 6 5600 7 6300 8 7000 9 7700 "10 - ${msg_coldest}")
-xsct ${tmpr}
+
+brt=$(zenity --list --title="KSCT" \
+	      --text="${text2}" \
+	      --column="${column3}" --column="${column2}" --hide-column=1 \
+	      0.05 "0 - ${msg_darkest}" 0.1 1 0.2 2 0.3 3 0.4 4 0.5 "5 - ${msg_def}" 0.6 6 0.7 7 0.8 8 0.9 9 1.0 "10 - ${msg_brightest}")
+
+xsct ${temp} ${brt}
 
